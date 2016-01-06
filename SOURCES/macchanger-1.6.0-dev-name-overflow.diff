@@ -1,0 +1,29 @@
+commit 8e59754795d9431314e72c19b09d8f150499c8a1
+Author: Tomas Hoger <thoger@fedoraproject.org>
+Date:   Wed Apr 10 21:57:15 2013 +0200
+
+    Fix buffer overflow in mc_net_info_new
+    
+    Long device name specified as a command line triggers buffer overflow.
+    Replace strcpy by strncpy to fix this issue.
+    
+    Reproducer:
+    $ macchanger -s `perl -e 'print "A"x100'`
+    
+    Reported in:
+    https://bugzilla.redhat.com/show_bug.cgi?id=641704
+
+diff --git a/src/netinfo.c b/src/netinfo.c
+index b915ef6..3525123 100644
+--- a/src/netinfo.c
++++ b/src/netinfo.c
+@@ -47,7 +47,8 @@ mc_net_info_new (const char *device)
+ 		return NULL;
+ 	}
+ 
+-	strcpy (new->dev.ifr_name, device);
++	strncpy (new->dev.ifr_name, device, sizeof(new->dev.ifr_name));
++	new->dev.ifr_name[sizeof(new->dev.ifr_name)-1] = '\0';
+ 	if (ioctl(new->sock, SIOCGIFHWADDR, &new->dev) < 0) {
+ 		perror ("[ERROR] Set device name");
+ 		free(new);

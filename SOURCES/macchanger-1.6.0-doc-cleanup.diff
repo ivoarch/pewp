@@ -1,0 +1,84 @@
+commit d93794a34686f9f75f6579e929a17a7762fcb383
+Author: Tomas Hoger <thoger@fedoraproject.org>
+Date:   Wed Apr 10 23:32:11 2013 +0200
+
+    Documentation clean up
+    
+    Get man page, texi documentation and --help output in sync.
+
+diff --git a/doc/macchanger.texi b/doc/macchanger.texi
+index 3ec5734..b48d151 100644
+--- a/doc/macchanger.texi
++++ b/doc/macchanger.texi
+@@ -83,7 +83,7 @@ address of network interfaces.
+ @item Set another MAC of the same vendor
+ @item Set a MAC of the same kind (eg: wireless card)
+ @item Reset MAC address to its original, permanent hardware value
+-@item Display a vendor MAC list (today, 6200 items) to choose from
++@item Display a vendor MAC list (more than 17000 items) to choose from
+ @end itemize
+ 
+ 
+@@ -150,6 +150,13 @@ Reset MAC address to its original, permanent hardware value.
+ Print known vendors. If a key is spefified, @command{macchanger} will
+ print only vendor that matches the string.
+ 
++@item -b
++@cindex @code{-b}
++@itemx --bia
++@cindex @code{--bia}
++Pretend to be a burned-in-address. If not used, the MAC will have the
++locally-administered bit set.
++
+ @item -m
+ @cindex @code{-m}
+ @itemx --mac=@var{XX:XX:XX:XX:XX:XX}
+diff --git a/macchanger.1 b/macchanger.1
+index 3a41a3f..525d44f 100644
+--- a/macchanger.1
++++ b/macchanger.1
+@@ -1,5 +1,5 @@
+ .\"                              hey, Emacs:   -*- nroff -*-
+-.\" macc is free software; you can redistribute it and/or modify
++.\" macchanger is free software; you can redistribute it and/or modify
+ .\" it under the terms of the GNU General Public License as published by
+ .\" the Free Software Foundation; either version 2 of the License, or
+ .\" (at your option) any later version.
+@@ -13,7 +13,7 @@
+ .\" along with this program; see the file COPYING.  If not, write to
+ .\" the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ .\"
+-.TH MACC 1 "December 1, 2002"
++.TH MACCHANGER 1 "April 10, 2013"
+ .\" Please update the above date whenever this man page is modified.
+ .\"
+ .\" Some roff macros, for reference:
+@@ -45,6 +45,9 @@ Show summary of options.
+ .B \-V, \-\-version
+ Show version of program.
+ .TP
++.B \-s, \-\-show
++Prints the current MAC.
++.TP
+ .B \-e, \-\-ending
+ Don't change the vendor bytes.
+ .TP
+@@ -61,16 +64,13 @@ Set fully random MAC.
+ Reset MAC address to its original, permanent hardware value.
+ .TP
+ .B \-l, \-\-list[=keyword]
+-Print known vendors (with keyword in the vendor's description string)
++Print known vendors (with keyword in the vendor's description string).
+ .TP
+ .B \-b, \-\-bia
+ Pretend to be a burned-in-address. If not used, the MAC will have the locally-administered bit set.
+ .TP
+ .B \-m, \-\-mac XX:XX:XX:XX:XX:XX, \-\-mac=XX:XX:XX:XX:XX:XX
+-Set the MAC XX:XX:XX:XX:XX:XX
+-.TP
+-.B \-s, \-\-show
+-Prints the current MAC
++Set the MAC XX:XX:XX:XX:XX:XX.
+ .SH EXAMPLE
+ macchanger \-A eth1
+ .SH "SEE ALSO"

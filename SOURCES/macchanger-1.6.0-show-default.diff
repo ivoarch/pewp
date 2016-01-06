@@ -1,0 +1,93 @@
+commit 26eda412450f09c4f43961a2e5ac31e92f47d30d
+Author: Tomas Hoger <thoger@fedoraproject.org>
+Date:   Fri Apr 12 22:19:38 2013 +0200
+
+    Change default action to show
+    
+    Previous default action was to increment MAC by one.  This default was not
+    documented and is "dangerous" (changes MAC, change is rather subtle and easy to
+    miss).
+    
+    This changes the default action to --show, which has already been the default
+    in Debian packages for a while, see:
+    
+    http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=621494
+    
+    Upstream bug report:
+    https://github.com/alobbs/macchanger/issues/4
+
+diff --git a/doc/macchanger.texi b/doc/macchanger.texi
+index 77595aa..60f0191 100644
+--- a/doc/macchanger.texi
++++ b/doc/macchanger.texi
+@@ -111,7 +111,8 @@ This version number should be included in all bug reports.
+ @cindex @code{-s}
+ @itemx --show
+ @cindex @code{--show}
+-Print the current MAC address and exit.
++Print the current MAC address and exit. This is the default action when no
++other option is specified.
+ 
+ @item -e
+ @cindex @code{-e}
+diff --git a/macchanger.1 b/macchanger.1
+index 442b2c5..cac1c5e 100644
+--- a/macchanger.1
++++ b/macchanger.1
+@@ -46,7 +46,7 @@ Show summary of options.
+ Show version of program.
+ .TP
+ .B \-s, \-\-show
+-Prints the current MAC.
++Prints the current MAC. This is the default action when no other option is specified.
+ .TP
+ .B \-e, \-\-ending
+ Don't change the vendor bytes.
+diff --git a/src/mac.c b/src/mac.c
+index 7389411..09d6136 100644
+--- a/src/mac.c
++++ b/src/mac.c
+@@ -106,19 +106,6 @@ mc_mac_equal (const mac_t *mac1, const mac_t *mac2)
+ }
+ 
+ 
+-void
+-mc_mac_next (mac_t *mac)
+-{
+-	if (++mac->byte[5]) return;
+-	if (++mac->byte[4]) return;
+-	if (++mac->byte[3]) return;
+-	if (++mac->byte[2]) return;
+-	if (++mac->byte[1]) return;
+-	if (++mac->byte[0]) return;
+-	mac->byte[5] = 1;
+-}
+-
+-
+ int
+ mc_mac_read_string (mac_t *mac, char *string)
+ {
+diff --git a/src/mac.h b/src/mac.h
+index e4ce74c..7f11504 100644
+--- a/src/mac.h
++++ b/src/mac.h
+@@ -46,6 +46,5 @@ int     mc_mac_equal       (const mac_t *, const mac_t *);
+ mac_t  *mc_mac_dup         (const mac_t *);
+ void    mc_mac_free        (mac_t *);
+ void    mc_mac_random      (mac_t *, unsigned char last_n_bytes, char set_bia);
+-void    mc_mac_next        (mac_t *);
+ 
+ #endif /* __MAC_CHANGER_LISTA_H__ */
+diff --git a/src/main.c b/src/main.c
+index 1117cb4..19224ed 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -256,7 +256,7 @@ main (int argc, char *argv[])
+ 	} else if (permanent) {
+ 		mac_faked = mc_mac_dup (mac_permanent);
+ 	} else {
+-		mc_mac_next (mac_faked);
++		exit (EXIT_OK); /* default to show */
+ 	}
+ 
+ 	/* Set the new MAC */
